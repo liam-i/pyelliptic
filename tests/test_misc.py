@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2014
-# Author: Yann GUIBET
-# Contact: <yannguibet@gmail.com>
+# Copyright (c) 2014 Yann GUIBET <yannguibet@gmail.com>.
 # All rights reserved.
 #
 #
@@ -31,16 +29,38 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '1.5.9'
 
-__all__ = [
-    'OpenSSL',
-    'ecc',
-    'cipher',
-    'hash',
-]
+import unittest
 
-from .openssl import OpenSSL
-from .ecc import ECC
-from .cipher import Cipher
-from .hash import hmac_sha256, hmac_sha512, pbkdf2, equals
+from pyelliptic import ECC
+from pyelliptic import hash as _hash
+
+
+class TestEquals(unittest.TestCase):
+
+    def test_equals(self):
+        a = '\xb5\x85/\xe80\xfa\x04\xdf\x07\x83\x17P\x9dw\x02\x89'
+
+        b = '\xb5\x85/\xe80\xfa\x04\xdf\x07\x83\x17P\x9dw\x02\x89'
+        self.assertTrue(_hash.equals(a, b))
+
+        b = '\xb4\x85/\xe80\xfa\x04\xdf\x07\x83\x17P\x9dw\x02\x89'
+        self.assertFalse(_hash.equals(a, b))
+
+        b = '\xb5\x85/\xe80\xfa\x04\xdf\x07\x83\x17P\x9dw\x02\x90'
+        self.assertFalse(_hash.equals(a, b))
+
+        b = '\xb4\x85/\xe80\xfa\x04\xdf\x07\x83\x17P\x9dw\x02'
+        self.assertFalse(_hash.equals(a, b))
+
+
+class TestCompatibilities(unittest.TestCase):
+
+    def test_old_keys(self):
+        alice = ECC()
+        curve, px, py, i = ECC._old_decode_pubkey(alice._old_get_pubkey())
+        curve2, pv, i = ECC._old_decode_privkey(alice._old_get_privkey())
+        self.assertEqual(curve, curve2)
+        alice2 = ECC(curve=curve, pubkey_x=px, pubkey_y=py, raw_privkey=pv)
+        self.assertEqual(alice2.get_pubkey(), alice.get_pubkey())
+        self.assertEqual(alice2.get_privkey(), alice.get_privkey())

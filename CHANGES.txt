@@ -1,7 +1,9 @@
-v1.5.8, 2017-04-25
+v1.5.9, 2018-01-25
 ------------------
 
-- Remove ECC part (issue #50)
+- v1.5.7 fork
+- initial OpenSSL 1.1.x compatibility
+- refactor library lookup on Windows
 
 v1.5.7, 2015-08-31
 ------------------

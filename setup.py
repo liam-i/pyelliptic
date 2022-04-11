@@ -28,26 +28,72 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from setuptools import setup
 
-from setuptools import setup, find_packages
+from setuptools.command.test import test
+
+
+class TestCommand(test, object):
+
+    user_options = [('openssl-1-1', None, "Use OpenSSL 1.1 binaries")]
+
+    def initialize_options(self):
+        super(TestCommand, self).initialize_options()
+        self.test_module = 'tests'
+        self.test_suite = ''
+        self.openssl_1_1 = False
+
+    def run(self):
+        if self.openssl_1_1:
+            from ctypes import util
+            util.find_library = self._fixed_library_path
+
+        import pyelliptic
+        from pyelliptic import OpenSSL
+
+        print('> ---------------------------------------------- ')
+        print('> version:', pyelliptic.__version__)
+        print('> library:', pyelliptic.openssl.libname)
+        print('> openssl:', '1.1' if OpenSSL.using_openssl_1_1 else 'pre-1.1')
+        print('> ---------------------------------------------- ')
+
+        super(TestCommand, self).run()
+
+    @staticmethod
+    def _fixed_library_path(*_args, **_kwargs):
+        import sys
+        from os.path import abspath, dirname, join
+
+        if sys.platform == 'win32':
+            lib_name = 'libcrypto-1_1-x64.dll'
+        elif sys.platform == 'darwin':
+            lib_name = 'libcrypto.1.1.dylib'
+        else:
+            lib_name = 'libcrypto.so.1.1'
+
+        lib_dir = join(abspath(dirname(__file__)), 'tests', 'lib')
+        return join(lib_dir, lib_name)
+
 
 setup(
     name="pyelliptic",
-    version='1.5.8',
-    url='https://github.com/yann2192/pyelliptic',
+    version='1.5.10',
+    url='https://github.com/mfranciszkiewicz/pyelliptic',
     license='BSD',
     description=
     "Python OpenSSL wrapper for modern cryptography with " +
     "ECC, AES, HMAC, Blowfish, ...",
-    author='Yann GUIBET',
-    author_email='yannguibet@gmail.com',
-    packages=find_packages(),
+    author='Yann GUIBET, Marek Franciszkiewicz',
+    author_email='yannguibet@gmail.com, marek@golem.network',
+    packages=['pyelliptic'],
+    cmdclass={
+        'test': TestCommand
+    },
     classifiers=[
         'Operating System :: Unix',
         'Operating System :: Microsoft :: Windows',
         'Environment :: MacOS X',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Topic :: Security :: Cryptography',
     ],

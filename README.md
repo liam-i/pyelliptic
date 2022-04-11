@@ -1,8 +1,6 @@
-## WARNING
-
-PyElliptic is **DEPRECATED**.
-
-See https://github.com/yann2192/pyelliptic/issues/50
+[![CircleCI](https://img.shields.io/circleci/project/github/mfranciszkiewicz/pyelliptic/openssl_1_1.svg?label=linux)](https://circleci.com/gh/mfranciszkiewicz/pyelliptic/tree/openssl_1_1)
+[![AppVeyor](https://img.shields.io/appveyor/ci/mfranciszkiewicz/pyelliptic/openssl_1_1.svg?label=windows)](https://ci.appveyor.com/project/mfranciszkiewicz/pyelliptic/branch/openssl_1_1)
+[![Travis CI](https://img.shields.io/travis/mfranciszkiewicz/pyelliptic/openssl_1_1.svg?label=macOS)](https://travis-ci.org/mfranciszkiewicz/pyelliptic)
 
 # PyElliptic
 
@@ -11,6 +9,12 @@ Under the Berkeley software distribution license (see LICENSE).
 
 Python3 compatible. For GNU/Linux and Windows.
 Require OpenSSL
+
+## WARNING
+
+Backward incompatibility in release 1.5.7.
+
+See issue https://github.com/yann2192/pyelliptic/issues/39 .
 
 ## Features
 
